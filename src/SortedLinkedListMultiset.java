@@ -17,13 +17,26 @@ public class SortedLinkedListMultiset<T> extends Multiset<T>
 		
 		LinkedListNode<T> p = headNode;
 		LinkedListNode<T> node = new LinkedListNode<T>(item);
-		while(p.getNext()!=null && ((Comparable)p.getNext().getValue()).compareTo((Comparable)item)<0){
-			p = p.getNext();
+		
+		while(p.getNext()!=null){
+			if(((Comparable)p.getNext().getValue()).compareTo((Comparable)item)<0){
+				p = p.getNext();
+			}
+			else{
+				break;
+			}
 		}
-		if(p.getNext() != null){
-		    node.setNext(p.getNext());
+		
+		if(p.getNext()!=null && ((Comparable)p.getNext().getValue()).compareTo((Comparable)item) == 0){
+			p.getNext().addElementCount();
 		}
-		p.setNext(node);
+		else{
+			if(p.getNext() != null){
+			    node.setNext(p.getNext());
+			}
+			p.setNext(node);
+		}
+
 		
 		size++;
 		// Implement me!
@@ -35,10 +48,10 @@ public class SortedLinkedListMultiset<T> extends Multiset<T>
 		int count = 0;
 		LinkedListNode<T> node = headNode.getNext();
 		
-		//TODO fix the error
 		while(node!=null){
 			if(node.getValue().equals(item)){
-				count++;
+				count = node.getCount();
+				break;
 			}
 			node = node.getNext();
 		}
@@ -52,12 +65,18 @@ public class SortedLinkedListMultiset<T> extends Multiset<T>
 		LinkedListNode<T> p = headNode;
 		while(p.getNext() != null){
 			if(p.getNext().getValue().equals(item)){
-				LinkedListNode<T> q = p.getNext();
-				p.setNext(q.getNext());
-				q.setNext(null);
-				q = null;
-				this.size--;
-				break;
+				if(p.getNext().getCount() == 1){
+					LinkedListNode<T> q = p.getNext();
+					p.setNext(q.getNext());
+					q.setNext(null);
+					q = null;
+					this.size--;
+					break;
+				}
+				else{
+					p.getNext().reduceElementCount();
+					this.size--;
+				}
 			}
 			p = p.getNext();
 		}
@@ -84,23 +103,15 @@ public class SortedLinkedListMultiset<T> extends Multiset<T>
 	public void print(PrintStream out) {
 		// Implement me!
 		LinkedListNode<T> node= headNode.getNext();
-		
-		Set<T> valueSet = new HashSet<T>();
 		while(node!=null){
-			if(valueSet.contains(node.getValue())){
-				;
-			}
-			else{
-				T value = node.getValue();
-				valueSet.add(value);
-				System.out.println(value + "  |  " + this.search(value) );
-			}
+			System.out.println(node.getValue() + "  |  " + node.getCount() );
 			node = node.getNext();
 		}
 		
 	} // end of print()
 	
 	private class LinkedListNode<T> {
+		private int count;
 		private T value;
 		private LinkedListNode<T> next;
 		
@@ -110,6 +121,7 @@ public class SortedLinkedListMultiset<T> extends Multiset<T>
 		
 		public LinkedListNode(T value){
 			this.value = value;
+			this.count = 1;
 			next = null;
 		}
 		
@@ -123,6 +135,18 @@ public class SortedLinkedListMultiset<T> extends Multiset<T>
 		
 		public void setValue(T value){
 			this.value = value;
+		}
+		
+		public int getCount(){
+			return this.count;
+		}
+		
+		public void addElementCount(){
+			this.count++;
+		}
+		
+		public void reduceElementCount(){
+			this.count--;
 		}
 	}
 	

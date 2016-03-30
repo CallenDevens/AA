@@ -1,9 +1,6 @@
 import java.io.PrintStream;
 import java.util.*;
 
-//TODO compare String with equal while int with "=="
-
-
 public class LinkedListMultiset<T> extends Multiset<T>
 {
 	private LinkedListNode<T> head;
@@ -16,19 +13,30 @@ public class LinkedListMultiset<T> extends Multiset<T>
 	} // end of LinkedListMultiset()
 	
 	
-	public void add(T item) {
-		
+	public void add(T item) {	
 		LinkedListNode<T> node = new LinkedListNode<T>(item);
 		
 		if(head == null){
 			head = node;
 		}
 		else{
-			LinkedListNode<T> p = head;
-			while(p.getNext() !=null ){
-				p = p.getNext();
+			
+			if(head.getValue().equals(item)){
+				head.addElementCount();
+			}else{
+				
+				LinkedListNode<T> p = head;
+				while(p.getNext() !=null){
+					if(p.getValue().equals(item)){
+						p.addElementCount();
+						this.size++;
+						return;
+					}
+					p = p.getNext();
+				}
+				p.setNext(node);
 			}
-			p.setNext(node);
+
 		}
 		this.size++;
 	} // end of add()
@@ -39,15 +47,12 @@ public class LinkedListMultiset<T> extends Multiset<T>
 		int count = 0;
 		LinkedListNode<T> node = head;
 		
-		//TODO fix the error
 		while(node!=null){
 			if(node.getValue().equals(item)){
-				count++;
+				count = node.getCount();
+				break;
 			}
-			node = node.getNext();
 		}
-		
-		// default return, please override when you implement this method
 		return count;
 	} // end of add()
 	
@@ -56,9 +61,14 @@ public class LinkedListMultiset<T> extends Multiset<T>
 		
 		LinkedListNode<T> node= head;
 		if(head.getValue().equals(item)){
-			head = head.getNext();
-			node.setNext(null);
-			node = null;
+			if(head.getCount() == 1){
+				head = head.getNext();
+				node.setNext(null);
+				node = null;
+			}
+			else{
+				head.reduceElement();
+			}
 			this.size--;
 		}
 		else{
@@ -69,9 +79,14 @@ public class LinkedListMultiset<T> extends Multiset<T>
 				node = node.getNext();
 			}
 			if(node.getNext() != null){
-				LinkedListNode<T> tobeDeleted = node.getNext();
-			    node.setNext(tobeDeleted.getNext());
-			    tobeDeleted.setNext(null);
+				if(node.getNext().getCount() == 1){
+					LinkedListNode<T> tobeDeleted = node.getNext();
+				    node.setNext(tobeDeleted.getNext());
+				    tobeDeleted.setNext(null);
+				}
+				else{
+					node.getNext().reduceElement();
+				}
 				this.size--;
 			}
 		}
@@ -80,7 +95,6 @@ public class LinkedListMultiset<T> extends Multiset<T>
 	
 	public void removeAll(T item) {
 		// Implement me!
-		
 		LinkedListNode<T> p= head;
 		
 		while(head!=null&&head.getValue().equals(item) ){
@@ -116,21 +130,12 @@ public class LinkedListMultiset<T> extends Multiset<T>
 			p = p.getNext();
 		}
 	}
-	
+
 	public void print(PrintStream out) {
 		// Implement me!
 		LinkedListNode<T> node= head;
-		
-		Set<T> valueSet = new HashSet<T>();
 		while(node!=null){
-			if(valueSet.contains(node.getValue())){
-				;
-			}
-			else{
-				T value = node.getValue();
-				valueSet.add(value);
-				out.println(value + "  |  " + this.search(value) );
-			}
+            out.println(node.getValue() + "  |  " + node.getCount());
 			node = node.getNext();
 		}
 		
@@ -138,6 +143,7 @@ public class LinkedListMultiset<T> extends Multiset<T>
 	} // end of print()
 	
 	private class LinkedListNode<T> {
+		private int count;
 		private T value;
 		private LinkedListNode<T> next;
 		
@@ -145,9 +151,21 @@ public class LinkedListMultiset<T> extends Multiset<T>
 			return this.value;
 		}
 		
+		public void addElementCount(){
+			this.count++;
+		}
+		
+		public int getCount(){
+			return this.count;
+		}
+		
+		public void reduceElement(){
+			this.count--;
+		}
 		public LinkedListNode(T value){
 			this.value = value;
 			next = null;
+			this.count = 1;
 		}
 		
 		public LinkedListNode getNext(){

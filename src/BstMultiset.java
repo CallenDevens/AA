@@ -135,13 +135,13 @@ public class BstMultiset<T> extends Multiset<T>
             deleteNode(node);
         }else if(compare > 0){
             if(node.getLeftChild() != null){
-                removeAll(item,node.getLeftChild());
+                removeAll(item, node.getLeftChild());
             }else{
                 return;
             }
         }else{
             if(node.getRightChild() != null){
-                removeAll(item,node.getRightChild());
+                removeAll(item, node.getRightChild());
             }else{
                 return;
             }
@@ -156,50 +156,82 @@ public class BstMultiset<T> extends Multiset<T>
         **③two children nodes
         **/
         if(node.getLeftChild() == null && node.getRightChild() == null){
-       	System.out.println("directly!");
-
+        	
+        	System.out.println("directly!");
+        	TreeNode parent = node.getParent();
+        	if(parent.getLeftChild() == node){
+        		parent.setLeftChild(null);
+        	}
+        	else{
+        		parent.setRightChild(null);
+        	}
+        	node.setParent(null);
             node = null;
+            
         }else if(node.getLeftChild()!=null && node.getRightChild() == null){
+        	
         	System.out.println("Left child not null!");
-
-            node = node.getLeftChild();
+        	
+        	TreeNode parent = node.getParent();
+        	TreeNode leftChild = node.getLeftChild();
+        	
+        	leftChild.setParent(parent);
+        	
+        	if(parent.getLeftChild() == node){
+        		parent.setLeftChild(leftChild);
+        	}
+        	else{
+        		parent.setRightChild(leftChild);
+        	}
+        	
+        	node.setParent(null);
+        	node.setLeftChild(null);
+        	node = null;
+            
         }else if(node.getLeftChild() == null && node.getRightChild() != null){
         	System.out.println("Right child not null!");
+        	
+        	TreeNode parent = node.getParent();
+        	TreeNode rightChild = node.getRightChild();
+        	
+        	rightChild.setParent(parent);
+        	
+        	if(parent.getLeftChild() == node){
+        		parent.setLeftChild(rightChild);
+        	}
+        	else{
+        		parent.setRightChild(rightChild);
+        	}
+        	
+        	node.setParent(null);
+        	node.setRightChild(null);
+        	node = null;
 
-            node = node.getRightChild();
         }else{
         	System.out.println("two children nodes");
             //two children nodes
-            TreeNode newPre = node.getRightChild();
-            TreeNode newRoot = newPre.getLeftChild();
             
-            if(newRoot == null){
-            	newPre.setLeftChild(node.getLeftChild());;
-            	node = newPre;
-                System.out.println("new root:" + newPre.getValue());
-
+        	TreeNode newRoot = node.getRightChild();
+            
+            while (newRoot.getLeftChild()!= null){
+            	newRoot = newRoot.getLeftChild();//find the minimum of right sub tree
             }
-            else{
-                while (newRoot.getLeftChild()!= null){
-                	newPre = newPre.getLeftChild();
-                    newRoot = newRoot.getLeftChild();//find the minimum of right sub tree
-                }
                 
- //               System.out.println("new root:" + newRoot.getValue());
-                node.setValue(newRoot.value);
-                node.setCount(newRoot.getCount());
-                
-                newPre.setLeftChild(newRoot.getRightChild());
-                newRoot = null;
-                
-            }
+            System.out.println("new root:" + newRoot.getValue());
+            
+            node.setValue(newRoot.value);
+            node.setCount(newRoot.getCount());
 
+            newRoot.getParent().setLeftChild(null);
+            newRoot.setParent(null);
+            newRoot = null;
         }
     }
 
 	private class TreeNode<T> {
 		private int count;
 		private T value;
+		
 		private TreeNode<T> parent;
 		private TreeNode<T> leftChild;
 		private TreeNode<T> rightChild;
@@ -209,6 +241,11 @@ public class BstMultiset<T> extends Multiset<T>
 			return this.value;
 		}
 		
+		public TreeNode getParent() {
+			// TODO Auto-generated method stub
+			return this.parent;
+		}
+
 		public void setParent(TreeNode parent) {
 			this.parent = parent;
 		}
