@@ -1,3 +1,4 @@
+
 import java.io.PrintStream;
 import java.util.*;
 
@@ -149,7 +150,7 @@ public class BstMultiset<T> extends Multiset<T>
     }
     
     public void deleteNode(TreeNode node){
-    	System.out.println("delete Node");
+ //   	System.out.println("delete Node");
         /**
         **①Leaf node，delete directly
         **②have got an child. 
@@ -157,7 +158,7 @@ public class BstMultiset<T> extends Multiset<T>
         **/
         if(node.getLeftChild() == null && node.getRightChild() == null){
         	
-        	System.out.println("directly!");
+//        	System.out.println("directly!");
         	TreeNode parent = node.getParent();
         	if(parent.getLeftChild() == node){
         		parent.setLeftChild(null);
@@ -170,18 +171,29 @@ public class BstMultiset<T> extends Multiset<T>
             
         }else if(node.getLeftChild()!=null && node.getRightChild() == null){
         	
-        	System.out.println("Left child not null!");
+ //       	System.out.println("Left child not null!");
         	
         	TreeNode parent = node.getParent();
         	TreeNode leftChild = node.getLeftChild();
-        	
+
+ //       	System.out.println("node:"+ node.getValue());
+ //       	System.out.print("leftChild:" + leftChild.getValue());
+
         	leftChild.setParent(parent);
         	
-        	if(parent.getLeftChild() == node){
-        		parent.setLeftChild(leftChild);
+        	if(parent!= null){
+        	    if(parent.getLeftChild() == node){
+        		    parent.setLeftChild(leftChild);
+        	    }
+        	    else{
+        		    parent.setRightChild(leftChild);
+        	    }
+        	    
+        	    //TODO add this one to modified version 
+    		    leftChild.setParent(parent);
         	}
         	else{
-        		parent.setRightChild(leftChild);
+        		this.root = leftChild;
         	}
         	
         	node.setParent(null);
@@ -189,18 +201,24 @@ public class BstMultiset<T> extends Multiset<T>
         	node = null;
             
         }else if(node.getLeftChild() == null && node.getRightChild() != null){
-        	System.out.println("Right child not null!");
+ //       	System.out.println("Right child not null!");
         	
         	TreeNode parent = node.getParent();
         	TreeNode rightChild = node.getRightChild();
         	
         	rightChild.setParent(parent);
         	
-        	if(parent.getLeftChild() == node){
-        		parent.setLeftChild(rightChild);
-        	}
-        	else{
-        		parent.setRightChild(rightChild);
+        	if(parent!=null){
+        	     if(parent.getLeftChild() == node){
+        		     parent.setLeftChild(rightChild);
+        	    }
+        	    else{
+        		    parent.setRightChild(rightChild);
+        	    }
+         	    //TODO add this one to modified version 
+     		    rightChild.setParent(parent);
+        	}else{
+        		this.root = rightChild;
         	}
         	
         	node.setParent(null);
@@ -208,7 +226,7 @@ public class BstMultiset<T> extends Multiset<T>
         	node = null;
 
         }else{
-        	System.out.println("two children nodes");
+ //       	System.out.println("two children nodes");
             //two children nodes
             
         	TreeNode newRoot = node.getRightChild();
@@ -217,12 +235,25 @@ public class BstMultiset<T> extends Multiset<T>
             	newRoot = newRoot.getLeftChild();//find the minimum of right sub tree
             }
                 
-            System.out.println("new root:" + newRoot.getValue());
-            
+ //           System.out.println("new root:" + newRoot.getValue());
+
             node.setValue(newRoot.value);
             node.setCount(newRoot.getCount());
-
-            newRoot.getParent().setLeftChild(null);
+            
+            if(newRoot == node.getRightChild()){
+            	node.setRightChild(newRoot.getRightChild());
+            	newRoot.setRightChild(null);
+            }
+            else{
+            	if(newRoot.getParent() == null){
+            		System.out.println("error!" + newRoot.getValue() + ": " +newRoot.getCount());
+            	}
+            	//TODO add this one to new version
+            	if(newRoot.getRightChild() !=null){
+                	newRoot.getRightChild().setParent(newRoot.getParent());
+            	}
+                newRoot.getParent().setLeftChild(newRoot.getRightChild());
+            }
             newRoot.setParent(null);
             newRoot = null;
         }
