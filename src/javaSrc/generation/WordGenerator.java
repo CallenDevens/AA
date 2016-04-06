@@ -6,7 +6,6 @@ import java.util.Random;
 
 public class WordGenerator {
 
-
 	private static final int WORD_SUM_OF_THE_FILE = 29224;
 	/**
 	 * Generates collection of wordss from sampling a uniform distribution.
@@ -18,7 +17,7 @@ public class WordGenerator {
 	private BufferedReader wordReader = null;
 	
 	public WordGenerator() {
-		mRandGen = new Random(System.currentTimeMillis());
+		//mRandGen = new Random(System.currentTimeMillis());
 	} // end of WordGenerator(
 		
 	/**
@@ -34,7 +33,7 @@ public class WordGenerator {
 		int counter = 0;
 		
 		try{
-			wordReader = new BufferedReader(new FileReader(new File("words4.txt")));
+			wordReader = new BufferedReader(new FileReader(new File("dict.txt")));
 
 		
 			while(counter < sampleSize){
@@ -44,17 +43,11 @@ public class WordGenerator {
 				
 				if(word  == null){
 					wordReader.close();
-					wordReader = new BufferedReader(new FileReader(new File("words4.txt")));
+					wordReader = new BufferedReader(new FileReader(new File("dict.txt")));
 				}else{
 			
 					double random = Math.random()*10000;
 					if(random < ratio){
-						/*
-						System.out.println(ratio);
-						System.out.println(random);
-
-						System.out.println(word + ", ");
-						*/
 						samples.add(word);
 						counter++;
 					}

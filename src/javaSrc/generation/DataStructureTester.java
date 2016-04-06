@@ -91,8 +91,20 @@ public class DataStructureTester {
 	}
 
 	public static void main(String [] args){
-		DataStructureTester tester = new DataStructureTester (2000);
-		tester.test(5000, 1000, 1000,100);
+		
+		if(args.length != 5){
+			System.out.println("Parameters error!");
+			return;
+		}
+		else{
+		
+				int initial = Integer.parseInt(args[0]);
+				int add = Integer.parseInt(args[1]);
+				int remove = Integer.parseInt(args[2]);
+				int search = Integer.parseInt(args[3]);
+				DataStructureTester tester = new DataStructureTester (2000);
+				tester.test(initial, add, remove , search);
+		}
 	}
 
 }
